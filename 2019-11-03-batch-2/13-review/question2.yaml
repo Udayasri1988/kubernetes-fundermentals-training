@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    run: busybox
+  name: question-2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: busybox
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        run: busybox
+    spec:
+      containers:
+      - image: busybox
+        name: busybox
+        command:
+        - /bin/sh
+        - -c
+        - 'mkdir -p /app && i=0; while true; do echo "$i: $(date)" >> /app/date.log; i=$((i+1));sleep 2; done; '
+        resources: {}
+        volumeMounts:
+        - name: log-dir
+          mountPath: /app
+      - image: busybox
+        name: log-stream
+        command:
+        - /bin/sh
+        - -c
+        - tail -f /log/date.log;
+        volumeMounts:
+        - name: log-dir
+          mountPath: /log
+      volumes:
+      - name: log-dir
+        emptyDir: {}
+status: {}
